@@ -9,14 +9,23 @@ jobs:
   render:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-      - run: npm install
-      - run: npx remotion render BerlinWall out/berlin-wall.mp4 --codec=h264 --crf=18
-      - uses: actions/upload-artifact@v4
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Render video
+        run: npx remotion render src/index.ts BerlinWall out/berlin-wall.mp4 --codec=h264 --crf=18
+
+      - name: Upload video
+        uses: actions/upload-artifact@v4
         with:
           name: berlin-wall-video
           path: out/berlin-wall.mp4
+          if-no-files-found: error
